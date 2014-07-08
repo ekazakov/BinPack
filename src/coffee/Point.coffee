@@ -7,6 +7,9 @@ class Point
 
         Object.freeze this
 
+    isEqual: (point) ->
+        this == point or (@x == point.x and @y == point.y)
+
     toJSON: ->
         x: @x
         y: @y

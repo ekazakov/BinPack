@@ -18,3 +18,11 @@ describe "Point", ->
 
             p1.x.should.to.be.equal p.x
             p1.y.should.to.be.equal p.y
+
+    describe "isEqual", ->
+        it "Should return true if points are equal otherwise return false", ->
+            p = new Point 0, 0
+
+            p.isEqual(p).should.to.be.true
+            p.isEqual(new Point 0, 0).should.to.be.true
+            p.isEqual(new Point 1, 0).should.to.be.false
