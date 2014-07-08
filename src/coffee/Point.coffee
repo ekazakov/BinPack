@@ -7,4 +7,8 @@ class Point
 
         Object.freeze this
 
+    toJSON: ->
+        x: @x
+        y: @y
+
 module.exports = Point
