@@ -7,11 +7,9 @@ describe "Rect", ->
     describe "Constructor", ->
         it "Should create instance with top left and bottom right points", ->
             p1 = new Point 2, 2
-            p2 = new Point 4, 7
-            r  = new Rect p1, p2
+            r  = new Rect {anchor: p1, w: 2, h: 5}
 
-            r.topLeft.toJSON().should.to.be.eql p1.toJSON()
-            r.bottomRight.toJSON().should.to.be.eql p2.toJSON()
+            r.topLeft.should.to.be.eql p1
             r.height.should.to.be.equal 5
             r.width.should.to.be.equal 2
 
@@ -31,18 +29,6 @@ describe "Rect", ->
             r1.canAccommodate(r2).should.to.be.true
             r1.canAccommodate(r3).should.to.be.false
             r1.canAccommodate(r1).should.to.be.true
-
-
-#    describe "vSplit", ->
-#        it "Should to split rect by vertical", ->
-#            r = new Rect x:2, y:2, w:3, h:3
-#            r.vSplit(4).should.to.be.eql [new Rect(x:2, y:2, w:2, h:3), new Rect(x:4, y:2, w:1, h:3)]
-#
-#        it "Should throw error if xPos not in rect or rect corner", ->
-#            r = new Rect x:2, y:2, w:3, h:3
-#            expect(-> r.vSplit 6).to.throw Error, "Split xPos is out of rect side"
-#            expect(-> r.vSplit 2).to.throw Error, "Split xPos is out of rect side"
-#            expect(-> r.vSplit 0).to.throw Error, "Split xPos is out of rect side"
 
     describe "split", ->
         r = new Rect x:2, y:2, w:3, h:3
@@ -71,13 +57,42 @@ describe "Rect", ->
 
             expect(-> r.split r1).to.throw Error, "splitter more then target"
 
+    describe "adjacent", ->
+        r          = new Rect x:2, y:2, w:2, h:2
+        leftRect   = new Rect x:1, y:2, w:1, h:2
+        rightRect  = new Rect x:4, y:2, w:1, h:2
+        topRect    = new Rect x:2, y:1, w:2, h:1
+        bottomRect = new Rect x:2, y:4, w:2, h:1
+
+        describe "isLeftAdjacent", ->
+            it "Should return true if rects adjacent by left side", ->
+                r.isLeftAdjacent(leftRect).should.to.be.true
+
+        describe "isRightAdjacent", ->
+            it "Should return true if rects adjacent by right side", ->
+                r.isRightAdjacent(rightRect).should.to.be.true
+
+        describe "isTopAdjacent", ->
+            it "Should return true if rects adjacent by top side", ->
+                r.isTopAdjacent(topRect).should.to.be.true
+
+        describe "isBottomAdjacent", ->
+            it "Should return true if rects adjacent by bottom side", ->
+                r.isBottomAdjacent(bottomRect).should.to.be.true
+
+
     describe "join", ->
+        r1         = new Rect x:2, y:2, w:2, h:2
+        leftRect   = new Rect x:1, y:2, w:1, h:2
+        rightRect  = new Rect x:4, y:2, w:1, h:2
+        topRect    = new Rect x:2, y:1, w:2, h:1
+        bottomRect = new Rect x:2, y:4, w:2, h:1
+
         it "Should join adjacent rects", ->
-            r1 = new Rect x:2, y:2, w:2, h:2
-            r2 = new Rect x:4, y:2, w:1, h:2
-            r3 = new Rect x:2, y:4, w:2, h:1
+            r1.join(leftRect).should.to.be.eql new Rect x:1, y:2, w:3, h:2
+            r1.join(rightRect).should.to.be.eql new Rect x:2, y:2, w:3, h:2
+            r1.join(topRect).should.to.be.eql new Rect x:2, y:1, w:2, h:3
+            r1.join(bottomRect).should.to.be.eql new Rect x:2, y:2, w:2, h:3
 
-            r1.join(r2).should.to.be.eql new Rect x:2, y:2, w:3, h:2
-            r1.join(r3).should.to.be.eql new Rect x:2, y:2, w:2, h:3
-
-
+        it "Should to throw error if rects isn't adjacent", ->
+            expect(-> r1.join(new Rect x:3, y:3, w:2, h:5)).to.throw Error, "Rect isn't adjacent"

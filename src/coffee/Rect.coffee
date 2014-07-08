@@ -3,25 +3,23 @@
 Point = require "./Point.coffee"
 
 class Rect
-    constructor: (@topLeft, @bottomRight) ->
-        if arguments.length == 1
-            {x, y, w, h} = arguments[0]
-            @topLeft  = new Point x, y
-            @bottomRight = new Point x + w, y + h
+    constructor: (params) ->
+        if params.anchor?
+            {anchor: {x, y}, w, h} = params
+        else
+            {x, y, w, h} = params
 
-        @height = @bottomRight.y - @topLeft.y
-        @width  = @bottomRight.x - @topLeft.x
+        @topLeft     = new Point x, y
+        @topRight    = new Point x + w, y
+        @bottomLeft  = new Point x, y + h
+        @bottomRight = new Point x + w, y + h
+        @height      = h
+        @width       = w
+
         Object.freeze this
 
     canAccommodate: (rect) ->
         rect.width <= @width and rect.height <= @height
-
-#    vSplit: (xPos) ->
-#        throw Error "Split xPos is out of rect side" if xPos >= @bottomRight.x or xPos <= @topLeft.x
-#        [
-#            new Rect x: @topLeft.x, y: @topLeft.y, h: @height, w: xPos - @topLeft.x
-#            new Rect x: xPos, y: @topLeft.y, h: @height, w: @bottomRight.x - xPos
-#        ]
 
     split: (rect) ->
         throw Error "splitter more then target" if not @canAccommodate rect
@@ -55,16 +53,43 @@ class Rect
                 h: @height - rect.height
         ]
 
+    isLeftAdjacent: (rect) ->
+        @topLeft.isEqual(rect.topRight) and @bottomLeft.isEqual(rect.bottomRight)
+
+    isRightAdjacent: (rect) ->
+        @topRight.isEqual(rect.topLeft) and @bottomRight.isEqual(rect.bottomLeft)
+
+    isTopAdjacent: (rect) ->
+        @topLeft.isEqual(rect.bottomLeft) and @topRight.isEqual(rect.bottomRight)
+
+    isBottomAdjacent: (rect) ->
+        @bottomLeft.isEqual(rect.topLeft) and @bottomRight.isEqual(rect.topRight)
+
+    isAjacent: (rect) ->
+        @isLeftAdjacent(rect) or @isRightAdjacent(rect) or @isTopAdjacent(rect) or @isBottomAdjacent(rect)
 
     join: (rect) ->
-        if @topLeft.y == rect.topLeft.y and @height == rect.height
-            @_joinRight rect
-        else if @topLeft.x == rect.topLeft.x and @width == rect.width
-            @_joinBottom rect
+        if @isLeftAdjacent(rect)
+            joinLeft this, rect
+        else if @isRightAdjacent(rect)
+            joinRight this, rect
+        else if @isTopAdjacent(rect)
+            joinTop this, rect
+        else if @isBottomAdjacent(rect)
+            joinBottom this, rect
+        else
+            throw Error "Rect isn't adjacent"
 
-    _joinRight: (rect) ->
-        new Rect x: @topLeft.x, y: @topLeft.y, w: @width + rect.width, h: @height
+joinLeft = (rect1, rect2) ->
+    new Rect anchor: rect2.topLeft, w: rect1.width + rect2.width, h: rect1.height
 
-    _joinBottom: (rect) ->
-        new Rect x: @topLeft.x, y: @topLeft.y, w: @width, h: @height + rect.height
+joinRight = (rect1, rect2) ->
+    new Rect anchor: rect1.topLeft, w: rect1.width + rect2.width, h: rect1.height
+
+joinTop = (rect1, rect2) ->
+    new Rect anchor: rect2.topLeft, w: rect1.width, h: rect1.height + rect2.height
+
+joinBottom = (rect1, rect2) ->
+    new Rect anchor: rect1.topLeft, w: rect1.width, h: rect1.height + rect2.height
+
 module.exports = Rect
