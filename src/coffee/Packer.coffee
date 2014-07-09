@@ -2,17 +2,40 @@
 
 Rect  = require "./Rect.coffee"
 Point = require "./Point.coffee"
+_     = require "lodash"
 
 class Packer
-    constructor: (@unpositionedRects, @width) ->
-        @rectCount      = @unpositionedRects.length
-        @positonedRects = []
+    constructor: (@unpositioned, @width) ->
+        @rectCount = @unpositioned.length
+        @positioned = []
 
     pack: ->
-        Packer.sortRects @unpositionedRects
+        Packer.sortRects @unpositioned
 
-        rect = @unpositionedRects[0]
-        section = @createSection
+        anchor = new Point 0, 0
+
+        while @unpositioned.length != 0
+            anchor = @step anchor
+
+
+        @positioned
+
+
+    step: (anchor) ->
+        rect       = @unpositioned.shift()
+        section    = @createSection anchor, rect
+        subSection = section.split(rect)[0]
+
+        @positioned.push(rect)
+
+        if subSection?
+            _(@unpositioned).each (rect, index) =>
+                if subSection.canAccommodate rect
+                    @positioned.push(new Rect anchor: subSection.topLeft, w: rect.width, h: rect.height)
+                    @unpositioned.splice index, 1
+                    false
+
+        section.bottomLeft
 
     createSection: (anchor, rect) ->
         new Rect anchor: anchor, w: @width, h: rect.height

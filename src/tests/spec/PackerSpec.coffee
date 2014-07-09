@@ -23,3 +23,12 @@ describe "Packer", ->
         it "Should create new section rect", ->
             packer = new Packer [], 6
             packer.createSection(p, r1).should.to.be.eql new Rect anchor: p, h:5, w:6
+
+
+            section = packer.createSection(p, r1)
+#            console.log section.split(r1)
+
+    describe "pack", ->
+        it "Should pack rects to bin", ->
+            packer = new Packer [r1, r2, r3, r4, r5], 6
+            console.log packer.pack()
