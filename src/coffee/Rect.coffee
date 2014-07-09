@@ -1,6 +1,7 @@
 "use strict"
 
 Point = require "./Point.coffee"
+_     = require "lodash"
 
 class Rect
     constructor: (params) ->
@@ -15,6 +16,7 @@ class Rect
         @bottomRight = new Point x + w, y + h
         @height      = h
         @width       = w
+        @area        = h * w
 
         Object.freeze this
 
@@ -79,6 +81,9 @@ class Rect
             joinBottom this, rect
         else
             throw Error "Rect isn't adjacent"
+
+    toJSON: ->
+        _({}).extend(@topLeft.toJSON(), {w: @width, h: @height}).value()
 
 joinLeft = (rect1, rect2) ->
     new Rect anchor: rect2.topLeft, w: rect1.width + rect2.width, h: rect1.height
