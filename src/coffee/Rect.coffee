@@ -23,6 +23,9 @@ class Rect
     canAccommodate: (rect) ->
         rect.width <= @width and rect.height <= @height
 
+    moveTo: (anchor) ->
+        new Rect anchor: anchor, w: @width, h: @height
+
     split: (rect) ->
         throw Error "splitter more then target" if not @canAccommodate rect
 
