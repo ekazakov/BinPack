@@ -8,36 +8,18 @@ _      = require "lodash"
 
 {div} = React.DOM
 
-
-
 App = React.createClass
     displayName: "App"
 
     update: (rects) ->
-        @setState rects: _.invoke(rects, "toJSON")
+        @setState rects: rects
 
     getInitialState: ->
         rects: []
 
     componentDidMount: ->
-        packer = new Packer(@props.rects, 6)
-
-        Packer.sortRects packer.unpositioned
-        anchor = new Point 0, 0
-        widget = this
-
-        console.log "!"
-        tick = ->
-            setTimeout ->
-                console.log anchor.toJSON()
-                anchor = packer.step anchor
-                widget.update packer.positioned
-
-                tick() if packer.unpositioned.length
-
-            , 1000
-
-        tick()
+        packer = new Packer(@props.rects, 6, @update)
+        packer.doo()
 
     renderRects: ->
         @state.rects.map (rect) ->

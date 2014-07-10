@@ -5,7 +5,7 @@ Point = require "./Point.coffee"
 _     = require "lodash"
 
 class Packer
-    constructor: (@unpositioned, @width) ->
+    constructor: (@unpositioned, @width, @callback) ->
         @rectCount = @unpositioned.length
         @positioned = []
 
@@ -88,16 +88,13 @@ class Packer
         return _.find @unpositioned, (rect) ->
             return target.canAccommodate rect
 
-#    fillWithRect: (target) ->
-#        rect = @findSuitableRect target
-#        if rect?
-#            @positionRect target.topLeft, rect
-
     positionRect: (anchor, rect) ->
-        @positioned.push rect.moveTo(anchor)
         index = @unpositioned.indexOf rect
-        @unpositioned.splice index, 1
 
+        if index != -1
+            @positioned.push rect.moveTo(anchor)
+            @callback _.invoke(@positioned, "toJSON")
+            @unpositioned.splice index, 1
 
 Packer.sortRects = (blocks) ->
     blocks.sort (b, a) ->
