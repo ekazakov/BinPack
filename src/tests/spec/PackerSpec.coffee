@@ -20,14 +20,6 @@ describe "Packer", ->
             rects = [r1, r2, r3, r4, r5]
             Packer.sortRects(rects).should.to.be.eql [r1, r5, r3, r4, r2]
 
-#    describe "createSection", ->
-#        p  = new Point 0, 0
-#        r1 = new Rect anchor: p, w: 4, h:5
-#
-#        it "Should create new section rect", ->
-#            packer = new Packer [], 6
-#            packer.createSection(p, r1).should.to.be.eql new Rect anchor: p, h:5, w:6
-
     describe "pack", ->
         p  = new Point 0, 0
         r1 = new Rect anchor: p, w: 4, h:5
@@ -42,34 +34,14 @@ describe "Packer", ->
         r4_ = {x: 0, y: 9, w: 2, h: 2}
         r5_ = {x: 2, y: 9, w: 3, h: 1}
 
-        it "Should pack rects to bin", ->
+        it.skip "Should pack rects to bin", ->
             packer = new Packer [r1, r2, r3, r4, r5], 6
 
             _.invoke(packer.pack(), "toJSON").should.to.eql [r1_, r2_, r3_, r4_, r5_]
 
-#    describe "sub step", ->
-#        it "should", ->
-#            r1 = new Rect x:3, y:0, w:4, h:3
-#            r2 = new Rect x:3, y:0, w:2, h:2
-#            r3 = new Rect x:0, y:0, w:2, h:3
-#            r4 = new Rect x:0, y:0, w:2, h:2
-#            r5 = new Rect x:0, y:0, w:3, h:1
-#
-#            rects = [r3, r4, r5]
-#            r1.split(r2).length.should.to.be.equal 3
-#
-#            [s0, s1, s2] = r1.split(r2)
-#
-#            subSections = [
-#                [s0.join(s1), s2]
-#                [s1.join(s2), s0]
-#            ]
-#
-#            Packer::subStep(subSections, rects).should.to.be.eql [r5, r4]
-#            Packer::subStep([], rects).should.to.be.eql []
-#
-#            Packer::subStep([ new Rect(x: 0, y: 0, w:2, h:3) ], rects).should.to.be.eql [r3]
-#            Packer::subStep([ new Rect(x: 0, y: 0, w:1, h:3) ], rects).should.to.be.eql []
+    describe "sub step", ->
+        it.skip "should", ->
+
 
 
     describe "createStripe", ->
@@ -94,7 +66,7 @@ describe "Packer", ->
 
         it "Should return variants how to fill empty space in one options available", ->
             rect = new Rect x:5, y:0, w:1, h:3
-            packer.createFillOptions([rect]).should.to.be.eql [rect]
+            packer.createFillOptions([rect]).should.to.be.eql [[rect]]
 
         it "Should return variants how to fill empty space in three options available", ->
             targets = [
@@ -173,7 +145,7 @@ describe "Packer", ->
 
         it "Should pack!", ->
             packer = new Packer rects, 6
-            packer.doo()
+#            packer.doo()
 
             console.log packer.unpositioned
             console.log packer.positioned

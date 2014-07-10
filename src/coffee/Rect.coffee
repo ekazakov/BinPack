@@ -38,12 +38,12 @@ class Rect
         if rect.width == @width
             return [new Rect x: @topLeft.x, y: @topLeft.y + rect.height, w: @width, h: @height - rect.height]
 
-        [
+        return [
             new Rect
                  x: @topLeft.x + rect.width
                  y: @topLeft.y
                  w: @width - rect.width
-                 h: rect.width
+                 h: rect.height
 
             new Rect
                 x: @topLeft.x + rect.width

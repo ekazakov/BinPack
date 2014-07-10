@@ -2,6 +2,7 @@
 
 Rect = require "./../../coffee/Rect.coffee"
 Point = require "./../../coffee/Point.coffee"
+_ = require "lodash"
 
 describe "Rect", ->
     describe "Constructor", ->
@@ -56,6 +57,17 @@ describe "Rect", ->
             r1 = new Rect x:0, y:0, w:5, h:3
 
             expect(-> r.split r1).to.throw Error, "splitter more then target"
+
+        it "test", ->
+            rect = new Rect x:1, y:3, w:5, h:2
+            r1   = new Rect x:1, y:3, w:3, h:1
+
+            _.invoke(rect.split(r1), "toJSON").should.to.be.eql [
+                {x:4, y:3, w:2, h:1}
+                {x:4, y:4, w:2, h:1}
+                {x:1, y:4, w:3, h:1}
+            ]
+
 
     describe "adjacent", ->
         r          = new Rect x:2, y:2, w:2, h:2

@@ -1,0 +1,30 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+.block {
+    /*position: absolute;*/
+    box-sizing: border-box;
+    /*border: 1px solid #fefefe;*/
+    padding: 10px;
+    font-family: Arial;
+    font-size: 12px;
+}
+
+.abs-block {
+    position: absolute;
+}
+
+#blocks {
+    padding: 20px;
+}
+
+#root {
+    position: absolute;
+    top: 30px;
+    left: 230px;
+    background-color: #EEEEEE;
+    width: 300px;
+    height: 500px;
+}
