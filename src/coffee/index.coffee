@@ -1,3 +1,6 @@
 "use strict"
 
-Point = require "./Point.coffee"
+React = require "react"
+App   = require "./App.coffee"
+
+React.renderComponent App(), document.body
