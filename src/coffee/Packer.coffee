@@ -29,6 +29,8 @@ class Packer
 
         variant?.rects.forEach (rect, index) =>
             @positionRect variant.targets[index].topLeft, rect
+
+        variant?.rects.forEach (rect, index) =>
             @subStep variant.targets[index], rect
 
     createStripe: (anchor, rect) ->
@@ -39,7 +41,7 @@ class Packer
         targets = target.split rect
 
         if _(targets).isEmpty()
-            return
+            return []
 
         if targets.length == 1
             return [targets]
@@ -54,21 +56,12 @@ class Packer
         return if not variants?
 
         unposRects = @unpositioned.slice()
-        results    = []
 
-        _(variants).each (variant) =>
-            rects = _(variant)
-                .map (target) =>
-                    rect = @findSuitableRect unposRects, target
-                    unposRects.splice(unposRects.indexOf(rect), 1) if rect?
-                    return rect
-                .compact()
-                .value()
-
-            if not _(rects).isEmpty()
-                results.push
-                    rects:   rects
-                    targets: variant
+        results = _(variants)
+            .map (variant) =>
+                @composeVariant variant, unposRects
+            .compact()
+            .value()
 
         return if _(results).isEmpty()
         return results[0] if results.length == 1
@@ -77,6 +70,22 @@ class Packer
             return results[0]
         else
             return results[1]
+
+    composeVariant: (variant, unposRects) ->
+        rects = @findRects variant, unposRects
+
+        if not _(rects).isEmpty()
+            rects:   rects
+            targets: variant
+
+    findRects: (variant, rects) ->
+        _(variant)
+            .map (target) =>
+                rect = @findSuitableRect rects, target
+                rects.splice(rects.indexOf(rect), 1) if rect?
+                return rect
+            .compact()
+            .value()
 
     findSuitableRect: (rects, target) ->
         return _.find rects, (rect) ->
