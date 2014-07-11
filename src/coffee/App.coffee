@@ -18,8 +18,8 @@ App = React.createClass
         rects: []
 
     componentDidMount: ->
-        packer = new Packer(@props.rects, 6, @update)
-        packer.doo()
+        packer = new Packer(@props.rects, 8, @update)
+        packer.pack()
 
     renderRects: ->
         @state.rects.map (rect) ->

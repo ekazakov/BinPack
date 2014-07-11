@@ -9,49 +9,35 @@ class Packer
         @rectCount = @unpositioned.length
         @positioned = []
 
-    doo: () ->
+    pack: () ->
         Packer.sortRects @unpositioned
         anchor = new Point 0, 0
-        counter = 0
 
         while @unpositioned.length
             anchor = @step anchor
-
-            counter++
-            if counter > 1000 then throw Error("Loop")
 
     step: (anchor) ->
         rect   = @unpositioned[0]
         stripe = @createStripe anchor, rect
 
-        unfilled = @getFreeSpace(stripe, rect)
-        # if unfilled.length != 1 then throw Error
-        rect2 = @findSuitableRect unfilled[0]
-
-        if rect2?
-            @positionRect unfilled[0].topLeft, rect2
-            unfilled2 = @getFreeSpace unfilled[0], _.last(@positioned)
-
-            options = @createFillOptions unfilled2
-            variant = @findBestFillVariant options
-
-            if variant?
-                variant.rects.forEach (rect, index) =>
-                    @positionRect variant.targets[index].topLeft, rect
-
-                # проверить каждый target на наличие пустого места
+        @subStep stripe, rect
 
         stripe.bottomLeft
 
+    subStep: (target, rect) ->
+        variant = @findBestFillVariant(@createFillOptions target, rect)
+
+        variant?.rects.forEach (rect, index) =>
+            @positionRect variant.targets[index].topLeft, rect
+            @subStep variant.targets[index], rect
+
     createStripe: (anchor, rect) ->
         @positionRect anchor, rect
-
         new Rect anchor: anchor, w: @width, h: rect.height
 
-    getFreeSpace: (target, rect) ->
-        return target.split rect
+    createFillOptions: (target, rect) ->
+        targets = target.split rect
 
-    createFillOptions: (targets) ->
         if _(targets).isEmpty()
             return
 
@@ -67,14 +53,19 @@ class Packer
     findBestFillVariant: (variants) ->
         return if not variants?
 
-        results = []
+        unposRects = @unpositioned.slice()
+        results    = []
 
         _(variants).each (variant) =>
             rects = _(variant)
-                .map (_.bind(@findSuitableRect, this))
+                .map (target) =>
+                    rect = @findSuitableRect unposRects, target
+                    unposRects.splice(unposRects.indexOf(rect), 1) if rect?
+                    return rect
                 .compact()
+                .value()
 
-            if not rects.isEmpty()
+            if not _(rects).isEmpty()
                 results.push
                     rects:   rects
                     targets: variant
@@ -87,8 +78,8 @@ class Packer
         else
             return results[1]
 
-    findSuitableRect: (target) ->
-        return _.find @unpositioned, (rect) ->
+    findSuitableRect: (rects, target) ->
+        return _.find rects, (rect) ->
             return target?.canAccommodate rect
 
     positionRect: (anchor, rect) ->
@@ -101,9 +92,9 @@ class Packer
 
 Packer.sortRects = (blocks) ->
     blocks.sort (b, a) ->
-        if a.height < b.height
+        if a.area < b.area
             -1
-        else if a.height > b.height
+        else if a.area > b.area
             1
         else  0
 
