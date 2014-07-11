@@ -85,8 +85,9 @@ class Packer
             targets: variants[1], rects: rects[1]
 
     findSuitableRect: (target) ->
-        return _.find @unpositioned, (rect) ->
-            return target.canAccommodate rect
+        if target?
+            return _.find @unpositioned, (rect) ->
+                return target.canAccommodate rect
 
     positionRect: (anchor, rect) ->
         index = @unpositioned.indexOf rect
