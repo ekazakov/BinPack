@@ -67,26 +67,29 @@ class Packer
     findBestFillVariant: (variants) ->
         return if not variants?
 
-        rects = _(variants).map (variant) =>
-            res = _(variant)
-                .map( _.bind(@findSuitableRect, this) )
+        results = []
+
+        _(variants).each (variant) =>
+            rects = _(variant)
+                .map (_.bind(@findSuitableRect, this))
                 .compact()
 
-            if not res.isEmpty()
-                return res.value()
-        .compact()
-        .value()
+            if not rects.isEmpty()
+                results.push
+                    rects:   rects
+                    targets: variant
 
-        return if _(rects).isEmpty()
+        return if _(results).isEmpty()
+        return results[0] if results.length == 1
 
-        if totalArea(rects[0]) > totalArea(rects[1])
-            targets: variants[0], rects: rects[0]
+        if totalArea(results[0].rects) > totalArea(results[1].rects)
+            return results[0]
         else
-            targets: variants[1], rects: rects[1]
+            return results[1]
 
     findSuitableRect: (target) ->
         return _.find @unpositioned, (rect) ->
-            return target.canAccommodate rect
+            return target?.canAccommodate rect
 
     positionRect: (anchor, rect) ->
         index = @unpositioned.indexOf rect
