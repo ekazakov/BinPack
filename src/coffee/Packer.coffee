@@ -53,30 +53,25 @@ class Packer
             ]
 
     findBestFillVariant: (variants) ->
-        return if not variants?
+        results = @composeVariants variants
 
+        if totalArea(results[0]?.rects) > totalArea(results[1]?.rects)
+            return results[0]
+        else
+            return results[1]
+
+    composeVariants: (variants) ->
         unposRects = @unpositioned.slice()
 
-        results = _(variants)
+        _(variants)
             .map (variant) =>
                 @composeVariant variant, unposRects
             .compact()
             .value()
 
-        return if _(results).isEmpty()
-        return results[0] if results.length == 1
-
-        if totalArea(results[0].rects) > totalArea(results[1].rects)
-            return results[0]
-        else
-            return results[1]
-
     composeVariant: (variant, unposRects) ->
-        rects = @findRects variant, unposRects
-
-        if not _(rects).isEmpty()
-            rects:   rects
-            targets: variant
+        rects:   @findRects variant, unposRects
+        targets: variant
 
     findRects: (variant, rects) ->
         _(variant)
