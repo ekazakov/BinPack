@@ -3,7 +3,8 @@
 React  = require "react"
 Point  = require "./Point.coffee"
 Rect   = require "./Rect.coffee"
-Packer = require "./Packer.coffee"
+#Packer = require "./Packer.coffee"
+TreePacker = require "./TreePacker.coffee"
 _      = require "lodash"
 
 {div} = React.DOM
@@ -18,7 +19,7 @@ App = React.createClass
         rects: []
 
     componentDidMount: ->
-        packer = new Packer(@props.rects, 8, @update)
+        packer = new TreePacker(@props.rects, 8, @update)
         packer.pack()
 
     renderRects: ->

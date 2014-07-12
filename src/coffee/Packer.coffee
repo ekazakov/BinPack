@@ -6,7 +6,6 @@ _     = require "lodash"
 
 class Packer
     constructor: (@unpositioned, @width, @callback) ->
-        @rectCount = @unpositioned.length
         @positioned = []
 
     pack: () ->
